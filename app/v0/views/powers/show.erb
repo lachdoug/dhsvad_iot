@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+  <title>Power</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/v0/power_favicon.png" type="image/png">
+  <link rel="stylesheet" type="text/css" href="/v0/assets/css/power.css" />
+  <script src="/v0/vendor/jquery-3.2.0.min.js"></script>
+  <script src="/v0/vendor/chartjs-2.6.0.min.js"></script>
+
+</head>
+
+<body>
+  <a href="<%= request.scheme %>://signout:none@<%= request.host %>:<%= request.port %>" class="nav-link"><%= fa "sign-out", "Sign out" %></a>
+  <hr>
+  <form id="add_meter_form">
+    <label>Name</label> <input name="meter[name]" />
+    <label>URL</label> <input name="meter[url]" />
+    <button onclick=add_meter_submit(event)>Add meter</button>
+  </form>
+  <script>
+    function add_meter_submit() {
+
+      $.ajax( {
+        type: "POST",
+        url: "/power/meters",
+        data: $("#add_meter_form").serialize(),
+        success: function() { location.reload(); },
+        error: function() { alert( "Failed to add meter." ); },
+      } );
+
+    }
+  </script>
+  <hr>
+  <form id="update_meter_targets_form">
+    <input name="meter_id">
+    <select name="target[month]">
+      <option value="" selected disabled>Select month...</option>
+      <option value="0">January</option>
+      <option value="1">February</option>
+      <option value="2">March</option>
+      <option value="3">April</option>
+      <option value="4">May</option>
+      <option value="5">June</option>
+      <option value="6">July</option>
+      <option value="7">August</option>
+      <option value="8">September</option>
+      <option value="9">October</option>
+      <option value="10">November</option>
+      <option value="11">December</option>
+    </select>
+    <input name="target[consumption]" />
+    <button onclick=update_targets_submit(event)>Update target</button>
+  </form>
+  <script>
+    function add_meter_submit(e) {
+      e.preventDefault();
+      $.ajax( {
+        type: "POST",
+        url: "/power/meters",
+        data: $("#add_meter_form").serialize(),
+        success: function() { location.reload(); },
+        error: function() { console.log("oops"); alert( "Failed to add meter." ); },
+      } );
+
+    };
+
+    function update_targets_submit(e) {
+      e.preventDefault();
+      $.ajax( {
+        type: "POST",
+        url: "/power/meters/targets",
+        data: $("#update_meter_targets_form").serialize(),
+        success: function() { alert( "Successfully update meter target." ); },
+        error: function() { alert( "Failed to update meter target." ); },
+      } );
+
+    };
+
+  </script>
+   
+  <hr>
+
+    <div id="meterList"></div>
+    <!-- <div id="overlay">
+        <div id="text">Overlay test</div>
+    </div> -->
+    <pre id="meterDashboard"></pre>
+    <canvas id="chart"></canvas>
+    <canvas id="chart2"></canvas>
+    <script>
+
+      var serverUrl = "<%= request.scheme %>://<%= request.host %>:<%= request.port %>";
+
+
+        var meterButtonClicked = function (e) {
+            var meterNumber = $(e.target).data("meter");
+            meterLoader(meterNumber);
+            $("#meterList").hide();
+        }
+
+        var meterDeleteClicked = function (e) {
+          // debugger
+          if ( confirm("Are you sure?") ) {
+            var deleteButton = e.target;
+            var meterNumber = $(deleteButton).data("meter");
+            $.ajax( {
+              type: "DELETE",
+              url: "/power/meters/" + meterNumber,
+              success: function() { deleteButton.parentElement.remove(); },
+              error: function() { alert( "Failed to delete meter." ); },
+            } );
+
+          };
+        }
+
+        // function on() {
+        //     document.getElementById("overlay").style.display = "block";
+        // }
+
+        // function off() {
+        //     document.getElementById("overlay").style.display = "none";
+        // }
+
+        var metersLoader = function (data) {
+            data.forEach(function (meter) {
+                $("#meterList").append(
+                  "<div class='meterListItem'> " +
+                  "<button class ='buttonDevices' data-meter=" + meter.id + ">" + meter.name + "</button>" +
+                  "<button class ='buttonDelete' data-meter=" + meter.id + ">Delete</button>" +
+                  "</div>"
+                );
+            });
+            $("button.buttonDevices").on('click', meterButtonClicked);
+            $("button.buttonDelete").on('click', meterDeleteClicked);
+        };
+
+
+        // var loadMeter = function (meterNumber) {
+        //     $.get("/meters" + meterNumber, meterLoader)
+        // }
+
+        var meterLoader = function (meterNumber) {
+            $.get( serverUrl + "/power/meters/" + meterNumber, meterLoaderResult);
+        };
+
+        var meterLoaderResult = function (data) {
+
+            // JSON.stringify(data, null, 2)
+
+            var tableHtml = "<table><tr><th>Meter</th><th>Month to date</th></tr>";
+
+
+            tableHtml = tableHtml + "<tr><td>" + data.name + "</td><td>" + data.power.monthToDate.consumption + "</td></tr>"
+
+            tableHtml = tableHtml + "</table>";
+
+
+            $("#meterDashboard").html(tableHtml);
+
+            var monthNames = [
+                "January", "February", "March",
+                "April", "May", "June",
+                "July", "August", "September",
+                "October", "November", "December"
+            ];
+
+
+            var labels = data.power.history.map(function (monthlyData) { var date = new Date( monthlyData.date ); return monthNames[ date.getMonth() ] + '-' + date.getFullYear(); });
+
+            var usages = data.power.history.map(function (monthlyData) { return Math.round(monthlyData.consumption, 1) });
+            var targets = data.power.history.map(function (monthlyData) { return Math.round(monthlyData.target, 1) });
+
+
+            var ctx = document.getElementById("chart").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Usage',
+                        data: usages,
+                        backgroundColor: 'red',
+                    },
+                    {
+                        label: 'Target',
+                        data: targets,
+                        backgroundColor: 'skyblue',
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+
+
+            var ctx = document.getElementById("chart2")
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ["Consumption", "Target (kWh)"],
+                    datasets: [{
+                        label: 'Month to date',
+                        data: [Math.round(data.power.monthToDate.target), Math.round(data.power.monthToDate.consumption)],
+                        backgroundColor: [
+                            'red',
+                            'skyblue',
+                        ],
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                display: false
+                            },
+                            gridLines: {
+                                display: false
+                            }
+                        }]
+                    }
+                }
+            });
+
+
+
+        }
+
+        $.get( serverUrl + "/power/meters", metersLoader);
+
+
+    </script>
+
+</body>
+
+</html>

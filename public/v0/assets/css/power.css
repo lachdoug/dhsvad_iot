@@ -1,0 +1,58 @@
+.buttonDevices {
+    display: block;
+    text-align: center;
+    color: black;
+    background-color: white;
+    border: 2px solid #00B0FF;
+    font-size: 16px;
+    padding: 10px 25px;
+    margin: 4px 2px;
+    width: 100px;
+    transition-duration: 0.5s;
+}
+
+.buttonDevices:hover {
+    color: white;
+    background-color: #00B0FF;
+}
+
+.buttonDelete:hover {
+    color: white;
+    background-color: rgb(255, 0, 0);
+}
+
+.buttonDelete {
+    display: block;
+    text-align: center;
+    color: black;
+    background-color: white;
+    border: 2px solid rgb(255, 0, 0);
+    font-size: 16px;
+    padding: 10px 25px;
+    margin: 4px 2px;
+    width: 100px;
+    transition-duration: 0.5s;
+}
+
+#overlay {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(black, black, black, 0.5);
+    cursor: pointer;
+}
+
+#text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 50px;
+    color: white;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+}

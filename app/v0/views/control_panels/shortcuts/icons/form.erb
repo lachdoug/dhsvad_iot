@@ -1,0 +1,14 @@
+<div class="control-panel">
+  <div class="heading">Upload icon for shortcut: <%= @shortcut.label %></div>
+  <div class="center-align">
+    <form method="POST" action="/control_panel/shortcuts/<%= @shortcut.id %>/icon"
+      enctype="multipart/form-data" class="form">
+      <div class="left-align">
+        <label class="label">Icon file</label><br>
+        <input name="icon[file]" type="file"></input><br><br>
+      </div>
+      <a href="/control_panel/shortcuts/<%= @shortcut.id %>" class="btn pull-left"><%= fa 'times', "Cancel" %></a>
+      <button type="submit" class="btn pull-right"><%= fa 'check', "OK" %></button>
+    </form>
+  </div>
+</div>

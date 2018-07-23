@@ -1,0 +1,16 @@
+<div class="navbar">
+
+    <div class="pull-left">
+      <a href="/"
+      class="nav-link <%= 'active' if request.path_info == '/map' %>">
+        <%= fa "map", "Map" %></a>
+      <a href="/map/data"
+      class="nav-link <%= 'active' if request.path_info.split('/')[1] == 'control_panel' %>">
+        <%= fa "gears", "Control panel" %></a>
+    </div>
+
+    <div class="pull-right">
+      <a href="<%= request.scheme %>://signout:none@<%= request.host %>:<%= request.port %>" class="nav-link"><%= fa "sign-out", "Sign out" %></a>
+    </div>
+
+</div>

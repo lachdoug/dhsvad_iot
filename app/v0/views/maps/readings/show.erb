@@ -1,0 +1,24 @@
+<form id="find_form" method="POST" action="/map/find" class="pull-right">
+  <input type="date" name="find[date]" />
+  <input type="time" name="find[time]" />
+  <input type="hidden" name="find[offset]" />
+  <button class="btn"><%= fa "search" %></button>
+</form>
+
+<div class="pull-right">
+  <a href="/map/readings/<%= @reading.id - 1 %>" class="btn<%= @reading.is_first? ? ' btn-disabled' : '' %>"><%= fa "arrow-left" %></a>
+  <a href="/map/readings/<%= @reading.id + 1 %>" class="btn<%= @reading.is_last? ? ' btn-disabled' : '' %>"><%= fa "arrow-right" %></a>
+</div>
+
+<br>
+
+<div>
+  <span id="reading_datetime"><%= @reading.date %> <%= @reading.time %> UTC</span>
+  <strong><span id="reading_datetime_local"></span></strong/>
+</div>
+
+<div style="width: 100%">
+  <iframe width="100%" height="600"
+  src="https://maps.google.com/maps?width=100%&height=600&hl=en&q=<%= @reading.latitude %>,<%= @reading.longitude %>&ie=UTF8&t=&z=14&iwloc=B&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0">
+  </iframe>
+</div>
