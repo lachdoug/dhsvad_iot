@@ -38,7 +38,7 @@ class V0 < Sinatra::Base
   set user_inactivity_timeout: ( ENV['INACTIVITY_TIMEOUT'] || 30 ).to_f * 60
   set user_name: ENV['USER_NAME'] || "admin"
   set user_password: ENV['USER_PASSWORD'] || "password"
-  set map_app: !( ENV['APP_MODE'] == 'map' )
+  set map_app: ( ENV['APP_MODE'] == 'map' )
 
   ## Logging
 
