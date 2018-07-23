@@ -6,12 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="/v0/power_favicon.png" type="image/png">
   <link rel="stylesheet" type="text/css" href="/v0/assets/css/power.css" />
+  <link rel="stylesheet" href="/v0/vendor/font-awesome-4.7.0/css/font-awesome.min.css">
   <script src="/v0/vendor/jquery-3.2.0.min.js"></script>
   <script src="/v0/vendor/chartjs-2.6.0.min.js"></script>
 
 </head>
 
 <body>
+  <a href="/" class="nav-link"><%= fa "home", "Home" %></a> |
   <a href="<%= request.scheme %>://signout:none@<%= request.host %>:<%= request.port %>" class="nav-link"><%= fa "sign-out", "Sign out" %></a>
   <hr>
   <form id="add_meter_form">
@@ -34,24 +36,24 @@
   </script>
   <hr>
   <form id="update_meter_targets_form">
-    <input name="meter_id">
-    <select name="target[month]">
-      <option value="" selected disabled>Select month...</option>
-      <option value="0">January</option>
-      <option value="1">February</option>
-      <option value="2">March</option>
-      <option value="3">April</option>
-      <option value="4">May</option>
-      <option value="5">June</option>
-      <option value="6">July</option>
-      <option value="7">August</option>
-      <option value="8">September</option>
-      <option value="9">October</option>
-      <option value="10">November</option>
-      <option value="11">December</option>
+    <label>Meter</label> <input name="meter_id">
+    <label>Month</label> <select name="target[month]">
+      <option value="" selected disabled>Select...</option>
+      <option value="1">January</option>
+      <option value="2">February</option>
+      <option value="3">March</option>
+      <option value="4">April</option>
+      <option value="5">May</option>
+      <option value="6">June</option>
+      <option value="7">July</option>
+      <option value="8">August</option>
+      <option value="9">September</option>
+      <option value="10">October</option>
+      <option value="11">November</option>
+      <option value="12">December</option>
     </select>
-    <input name="target[consumption]" />
-    <button onclick=update_targets_submit(event)>Update target</button>
+    <label>Target</label> <input name="target[consumption]" />
+    <button onclick=update_targets_submit(event)>Update</button>
   </form>
   <script>
     function add_meter_submit(e) {
@@ -79,7 +81,7 @@
     };
 
   </script>
-   
+
   <hr>
 
     <div id="meterList"></div>
@@ -129,6 +131,7 @@
                   "<div class='meterListItem'> " +
                   "<button class ='buttonDevices' data-meter=" + meter.id + ">" + meter.name + "</button>" +
                   "<button class ='buttonDelete' data-meter=" + meter.id + ">Delete</button>" +
+                  "<a href='http://localhost:3030/power/meters/" + meter.id + "/targets'>Targets for meter #" + meter.id + "</a>" +
                   "</div>"
                 );
             });

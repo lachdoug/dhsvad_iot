@@ -11,7 +11,7 @@ class V0
 
 
         def summarize_data
-          update consumption: meter.monthly_consumption_for( timestamp ), target: meter.target_for( timestamp )
+          update consumption: meter.monthly_consumption_for( timestamp ), target: meter.target_for( timestamp.month ).consumption
         end
 
         # def random_meter_data

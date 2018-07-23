@@ -20,7 +20,7 @@ class V0
         end
 
         def build_target_for( month )
-          monthly_targets.create( month: month, consumption: 0 )
+          monthly_targets.create( month: month, consumption: 10 )
         end
 
         def data
@@ -43,7 +43,7 @@ class V0
             result << {
               date: report.timestamp,
               consumption: report.consumption,
-              target: report.target
+              target: target_for( report.timestamp.month ).consumption # report.target
             }
           end
           # byebug

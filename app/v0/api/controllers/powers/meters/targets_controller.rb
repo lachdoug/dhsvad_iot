@@ -13,7 +13,6 @@ class V0
       post '/power/meters/targets' do
         response['Access-Control-Allow-Origin'] = '*'
         content_type :json, charset: 'utf-8'
-        byebug
         @meter = Meter.find( params[:meter_id] )
         @meter.update_monthly_target params[:target][:month], params[:target][:consumption]
         @meter.monthly_targets.all.to_json
