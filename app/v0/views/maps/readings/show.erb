@@ -6,8 +6,8 @@
 </form>
 
 <div class="pull-right">
-  <a href="/map/readings/<%= @reading.id - 1 %>" class="btn<%= @reading.is_first? ? ' btn-disabled' : '' %>"><%= fa "arrow-left" %></a>
-  <a href="/map/readings/<%= @reading.id + 1 %>" class="btn<%= @reading.is_last? ? ' btn-disabled' : '' %>"><%= fa "arrow-right" %></a>
+  <a href="/map/readings/<%= @reading.id - 1 %>" class="btn"><%= fa "arrow-left" %></a>
+  <a href="/map/readings/<%= @reading.id + 1 %>" class="btn"><%= fa "arrow-right" %></a>
 </div>
 
 <br>
@@ -15,6 +15,7 @@
 <div>
   <span id="reading_datetime"><%= @reading.date %> <%= @reading.time %> UTC</span>
   <strong><span id="reading_datetime_local"></span></strong/>
+  <%= @reading.latitude %>, <%= @reading.longitude %>
 </div>
 
 <div style="width: 100%">

@@ -3,7 +3,11 @@ class V0
     module Controllers
 
       get '/map/readings/:id' do
-        @reading = GpsReading.find( params[:id] )
+        begin
+          @reading = GpsReading.find( params[:id] )
+        rescue ActiveRecord::RecordNotFound
+          @reading = GpsReading.last
+        end
         view :'maps/readings/show'
       end
 
@@ -11,7 +15,8 @@ class V0
         response['Access-Control-Allow-Origin'] = '*'
         content_type :json, charset: 'utf-8'
         request.body.rewind
-        @request_payload = JSON.parse request.body.read
+        @request_payload = JSON.parse request.body.read, symbolize_names: true
+        @reading = GpsReading.create_from_post( @request_payload )
         $stderr.puts "Received GPS reading data: #{@request_payload}"
         @request_payload.to_json
       end
