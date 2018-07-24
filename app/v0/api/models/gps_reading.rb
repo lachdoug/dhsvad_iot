@@ -9,6 +9,7 @@ class V0
           nema_hemisphere = ( reading[:lat_dir] || reading[:latt_dir] ) == "S" ? -1 : 1
           latitude = ( nema_latitude[0..-8].to_f + nema_latitude[-7..-1].to_f / 60 ) * nema_hemisphere
           longitude = nema_longitude[0..-8].to_f + nema_longitude[-7..-1].to_f / 60
+          # byebug
           self.create( latitude: latitude, longitude: longitude, timestamp: Time.now.utc )
         end
         # curl --header "Content-Type: application/json" --data '{ "type": "position", "time_stamp": "001512.000", "longitude": "15118.9509", "lat_dir": "S", "latitude": "3330.9095","altitude": "9.4" }' http://admin:password@localhost:3030/map/readings --verbose
@@ -18,7 +19,7 @@ class V0
         end
 
         def time
-          timestamp.strftime('%H:%M')
+          timestamp.strftime('%H:%M:%S')
         end
 
         # def is_first?

@@ -1,11 +1,12 @@
 <form id="find_form" method="POST" action="/map/find" class="pull-right">
   <input type="date" name="find[date]" />
-  <input type="time" name="find[time]" />
+  <input type="time" name="find[time]" step="1" />
   <input type="hidden" name="find[offset]" />
   <button class="btn"><%= fa "search" %></button>
 </form>
 
 <div class="pull-right">
+  <a href="/" class="btn"><%= fa "map-marker" %></a>
   <a href="/map/readings/<%= @reading.id - 1 %>" class="btn"><%= fa "arrow-left" %></a>
   <a href="/map/readings/<%= @reading.id + 1 %>" class="btn"><%= fa "arrow-right" %></a>
 </div>

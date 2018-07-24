@@ -1,19 +1,16 @@
 require 'sinatra/base'
 require 'sinatra/extension'
 require 'sinatra/json'
-# require 'rest-client'
 require 'byebug'
 require "sinatra/activerecord"
 require "active_support"
-# require 'sinatra/custom_logger'
-# require 'logger'
+
 
 class V0 < Sinatra::Base
 
   register Sinatra::ActiveRecordExtension
-  # helpers Sinatra::CustomLogger
 
-  ## For debugging
+  ## Debugging
   ##----------------------------------------------------------------------------
 
   before do
@@ -26,33 +23,25 @@ class V0 < Sinatra::Base
   end
 
 
-  ##############################################################################
   ## Settings
-  ##############################################################################
+  ##----------------------------------------------------------------------------
 
   enable :sessions
 
   set dump_errors: true # Sinatra::Base.development?
+  set show_exceptions: false
   set public_folder: 'public'
   set session_secret: ENV['SECRET_KEY_BASE']
   set user_name: ENV['USER_NAME'] || "admin"
   set user_password: ENV['USER_PASSWORD'] || "password"
   set map_app: ( ENV['APP_MODE'] == 'map' ) || Sinatra::Base.development?
 
-  ## Logging
-
-  # configure :development, :production do
-  #   logger = Logger.new(File.open("#{root}/log/#{environment}.log", 'a'))
-  #   logger.level = Logger::DEBUG if development?
-  #   set :logger, logger
-  # end
-
   ## support _method DELETE/PUT
+  ##----------------------------------------------------------------------------
   use Rack::MethodOverride
 
-  ##############################################################################
-  ## CLIENT
-  ##############################################################################
+  ## Assets
+  ##----------------------------------------------------------------------------
 
   def application_js_files
     Dir.glob( [ "#{self.class.root}/views/assets/javascript/**/*.js" ] ).map do |file|
@@ -66,9 +55,17 @@ class V0 < Sinatra::Base
     end.join("\n")
   end
 
-  ##############################################################################
   ## Errors
-  ##############################################################################
+  ##----------------------------------------------------------------------------
+
+  error do |error|
+    content_type :json
+    [ 500, { error: { message: "Server error." } }.to_json ]
+  end
+
+  not_found do
+    404
+  end
 
   class NonFatalError < StandardError
     def initialize(message, status_code=500)
@@ -82,15 +79,18 @@ class V0 < Sinatra::Base
 
   end
 
-  ##############################################################################
-  ## API
-  ##############################################################################
-
-  ## Load-up the controllers, models & services
+  ## Controllers, models & services
   ##----------------------------------------------------------------------------
 
   require_relative 'api/api'
   register Api::Controllers
+
+  ## Views
+  ##----------------------------------------------------------------------------
+
+  def view template
+    erb template, layout: ( settings.map_app ? :map_layout : :power_layout )
+  end
 
   ## Helpers
   ##----------------------------------------------------------------------------
@@ -117,22 +117,8 @@ class V0 < Sinatra::Base
     @flash
   end
 
-  # ## Navbar
-  # ##----------------------------------------------------------------------------
-  #
-  # def navbar
-  #   erb :navbar
-  # end
-
   ## Authenticate
   ##----------------------------------------------------------------------------
-
-def view template
-
-  erb template, layout: ( settings.map_app ? :map_layout : :power_layout )
-
-end
-
 
   helpers do
     def protected!
@@ -143,89 +129,16 @@ end
 
     def authorized?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-      @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == [ settings.user_name, settings.user_password ]
+      @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [ settings.user_name, settings.user_password ]
     end
   end
-
-
-
-
 
   before do
     protected!
     section = request.path_info.split("/")[1]
     halt 404 if settings.map_app && section && section != 'map'
     halt 404 if !settings.map_app && section && section == 'map'
-    # authenticate_user
-    # begin
-    #   no_auth? || authenticate_user
-    #   # halt 401 if is_control_panel? && !current_user.is_admin?
-    # end
   end
-
-  # def is_control_panel?
-  #   request.path_info.split("/")[1] == "control_panel"
-  # end
-
-  # def no_auth?
-  #   # request.path_info == '/' ||
-  #   # request.path_info == '/sign_in' ||
-  #   request.path_info == '/user/password/success'
-  # end
-
-  # attr_reader :current_user
-  #
-  # def authenticate_user
-  #   user = Api::Models::User.new session, settings
-  #   if user.authenticated?
-  #     @current_user = user
-  #   else
-  #     session.clear
-  #     @current_user = nil
-  #   end
-  # end
-
-  ## Set core resources
-  ##----------------------------------------------------------------------------
-
-
-  ## View helpers
-  helpers do
-        def fa( type, text=nil )
-          "<i class='fa fa-#{type}'></i>#{ text ? ' ' + text : nil }"
-        end
-  end
-
-  # ## Error handling
-  # ##----------------------------------------------------------------------------
-  #
-  # ## 400 Fatal: General client error
-  # ## 401 Non-fatal: Authentication failed
-  # ## 404 Fatal: Bad route
-  # ## 405 Non-fatal: Action not allowed (route is recognised, but action cannot be performed)
-  # ## 406 Fatal: Params not acceptable (route is recognised, but params incomplete or invalid)
-  # ## 500 Fatal: General server error
-  # ## 503 Non-fatal: System busy or unavailable
-
-  set show_exceptions: false
-
-  error do |error|
-    content_type :json
-    if error.is_a?(NonFatalError)
-      # if error.status_code == 401
-      #   redirect '/sign_in', alert: error.message
-      # else
-        redirect '/user/portal', alert: error.message
-      # end
-    else
-      [ 500, { error: { message: "Server error." } }.to_json ]
-    end
-  end
-
-  not_found do
-    404
-  end
-
 
 
 end
