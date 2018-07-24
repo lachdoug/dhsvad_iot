@@ -7,7 +7,11 @@
   <link rel="icon" href="/v0/power_favicon.png" type="image/png">
   <link rel="stylesheet" type="text/css" href="/v0/assets/css/power.css" />
   <link rel="stylesheet" href="/v0/vendor/font-awesome-4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="v0/vendor/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="v0/vendor/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css">
+
   <script src="/v0/vendor/jquery-3.2.0.min.js"></script>
+  <script src="v0/vendor/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
   <script src="/v0/vendor/chartjs-2.6.0.min.js"></script>
 
 </head>
@@ -88,13 +92,12 @@
     <!-- <div id="overlay">
         <div id="text">Overlay test</div>
     </div> -->
-    <pre id="meterDashboard"></pre>
+    <div id="meterDashboard"></div>
     <canvas id="chart"></canvas>
     <canvas id="chart2"></canvas>
     <script>
 
       var serverUrl = "<%= request.scheme %>://<%= request.host %>:<%= request.port %>";
-
 
         var meterButtonClicked = function (e) {
             var meterNumber = $(e.target).data("meter");

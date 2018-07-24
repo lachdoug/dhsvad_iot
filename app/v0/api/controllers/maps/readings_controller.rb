@@ -4,10 +4,6 @@ class V0
 
       get '/map/readings/:id' do
         @reading = GpsReading.find( params[:id] )
-        # session[:find] = {
-        #   date: @reading.date,
-        #   time: @reading.time
-        # }
         view :'maps/readings/show'
       end
 
@@ -16,7 +12,7 @@ class V0
         content_type :json, charset: 'utf-8'
         request.body.rewind
         @request_payload = JSON.parse request.body.read
-        $stdout.puts "Received GPS reading data: #{@request_payload}"
+        $stderr.puts "Received GPS reading data: #{@request_payload}"
         @request_payload.to_json
       end
 
