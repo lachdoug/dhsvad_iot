@@ -4,11 +4,11 @@ class V0
       class GpsReading < ActiveRecord::Base
 
         def self.create_from_post( reading )
-          nema_longitude = reading[:longitude]
-          nema_latitude = reading[:latitude]
-          nema_hemisphere = ( reading[:lat_dir] || reading[:latt_dir] ) == "S" ? -1 : 1
-          latitude = ( nema_latitude[0..-8].to_f + nema_latitude[-7..-1].to_f / 60 ) * nema_hemisphere
-          longitude = nema_longitude[0..-8].to_f + nema_longitude[-7..-1].to_f / 60
+          nmea_longitude = reading[:longitude]
+          nmea_latitude = reading[:latitude]
+          nmea_hemisphere = ( reading[:lat_dir] || reading[:latt_dir] ) == "S" ? -1 : 1
+          latitude = ( nmea_latitude[0..-8].to_f + nmea_latitude[-7..-1].to_f / 60 ) * nmea_hemisphere
+          longitude = nmea_longitude[0..-8].to_f + nmea_longitude[-7..-1].to_f / 60
           # byebug
           self.create( latitude: latitude, longitude: longitude, timestamp: Time.now.utc )
         end

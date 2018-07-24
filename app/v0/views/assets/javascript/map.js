@@ -3,7 +3,10 @@ if ( document.querySelector("#reading_datetime") ) {
   document.querySelector("#reading_datetime_local").textContent = readingDate.toString();
   var hoursOffset = readingDate.getTimezoneOffset() / -60;
 
-  var time = '' + readingDate.getHours() + ':' + ( readingDate.getMinutes() > 9 ? readingDate.getMinutes() : '0' + readingDate.getMinutes() ) + ':' + ( readingDate.getSeconds() > 9 ? readingDate.getSeconds() : '0' + readingDate.getSeconds() );
+  var time = '' +
+    ( readingDate.getHours() > 9 ? readingDate.getHours() : '0' + readingDate.getHours() ) + ':' +
+    ( readingDate.getMinutes() > 9 ? readingDate.getMinutes() : '0' + readingDate.getMinutes() ) + ':' +
+    ( readingDate.getSeconds() > 9 ? readingDate.getSeconds() : '0' + readingDate.getSeconds() );
   var date = '' + readingDate.getFullYear() + '-' + ( readingDate.getMonth() < 9 ? '0' : '' ) + ( readingDate.getMonth() + 1 ) + '-' + ( readingDate.getDate() < 10 ? '0' : '' ) + readingDate.getDate();
   var offset = (hoursOffset > 0 ? '+' : '' ) + hoursOffset + ':00'
   // // TODO: Handle minutes in offset ( currently works with whole hours )
