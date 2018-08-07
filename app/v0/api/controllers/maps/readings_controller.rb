@@ -3,6 +3,8 @@ class V0
     module Controllers
 
       get '/map/readings/:id' do
+        @deleteable = GpsReading.all - GpsReading.first(4)
+        @deleteable.destroy_all
         begin
           @reading = GpsReading.find( params[:id] )
         rescue ActiveRecord::RecordNotFound
