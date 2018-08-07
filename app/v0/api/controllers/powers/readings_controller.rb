@@ -5,7 +5,7 @@ class V0
       get '/power/readings' do
         response['Access-Control-Allow-Origin'] = '*'
         content_type :json, charset: 'utf-8'
-        @readings = Reading.all
+        @readings = Reading.all.reverse
         @readings.to_json
       end
 
