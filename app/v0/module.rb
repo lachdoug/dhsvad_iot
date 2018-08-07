@@ -34,7 +34,7 @@ class V0 < Sinatra::Base
   set session_secret: ENV['SECRET_KEY_BASE']
   set user_name: ENV['USER_NAME'] || "admin"
   set user_password: ENV['USER_PASSWORD'] || "password"
-  set map_app: ( ENV['APP_MODE'] == 'map' ) || Sinatra::Base.development?
+  set map_app: ( ENV['APP_MODE'] == 'map' ) #|| Sinatra::Base.development?
 
   ## support _method DELETE/PUT
   ##----------------------------------------------------------------------------
