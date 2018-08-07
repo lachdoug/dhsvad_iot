@@ -4,7 +4,6 @@ class V0
 
       get '/map' do
         redirect "/map/readings/#{GpsReading.last.id}"
-        
       end
 
     end

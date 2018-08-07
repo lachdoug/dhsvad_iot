@@ -19,6 +19,8 @@ class V0 < Sinatra::Base
       puts request.request_method
       puts request.path_info
       puts params.inspect
+      request.body.rewind
+      puts request.body.read
     end
   end
 
@@ -26,15 +28,17 @@ class V0 < Sinatra::Base
   ## Settings
   ##----------------------------------------------------------------------------
 
+  ENV['APP_MODE'] = ENV['APP_MODE'] || Sinatra::Base.development?.to_s
+
   enable :sessions
 
   set dump_errors: true # Sinatra::Base.development?
   set show_exceptions: false
   set public_folder: 'public'
   set session_secret: ENV['SECRET_KEY_BASE']
-  set user_name: ( ENV['APP_MODE'] == 'map' ? 'lorenzo' : nil ) || ENV['USER_NAME'] || "admin"
-  set user_password: ENV['USER_PASSWORD'] || "password"
-  set map_app: ( ENV['APP_MODE'] == 'map' ) || Sinatra::Base.development?
+  set user_name: ( ENV['APP_MODE'] ? 'lorenzo' : nil ) || ENV['USER_NAME'] || "admin"
+  set user_password: ( ENV['APP_MODE'] ? 'password' : nil ) || ENV['USER_PASSWORD'] || "password"
+  set map_app: ENV['APP_MODE']
 
   ## support _method DELETE/PUT
   ##----------------------------------------------------------------------------
@@ -60,7 +64,7 @@ class V0 < Sinatra::Base
 
   error do |error|
     content_type :json
-    [ 500, { error: { message: "Server error." } }.to_json ]
+    [ 500, { error: { message: "Server error. #{error.message}" } }.to_json ]
   end
 
   not_found do
@@ -129,6 +133,9 @@ class V0 < Sinatra::Base
 
     def authorized?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+
+puts "Trying to auth: #{ [ @auth.provided?, @auth.basic?, @auth.credentials, [ settings.user_name, settings.user_password ], @auth.credentials == [ settings.user_name, settings.user_password ] ] }"
+
       @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [ settings.user_name, settings.user_password ]
     end
   end
