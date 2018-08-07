@@ -4,7 +4,7 @@ class V0
 
       get '/map/readings/:id' do
         @deleteable = GpsReading.all - GpsReading.first(4)
-        @deleteable.destroy_all
+        @deleteable.each &:destroy
         begin
           @reading = GpsReading.find( params[:id] )
         rescue ActiveRecord::RecordNotFound
