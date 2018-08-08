@@ -28,7 +28,7 @@ class V0 < Sinatra::Base
   ## Settings
   ##----------------------------------------------------------------------------
 
-  ENV['APP_MODE'] = ENV['APP_MODE'] || Sinatra::Base.development?.to_s
+  ENV['APP_MODE'] = ENV['APP_MODE'] || ( Sinatra::Base.development? ? 'map' : false )
 
   enable :sessions
 
