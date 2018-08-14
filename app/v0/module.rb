@@ -28,7 +28,7 @@ class V0 < Sinatra::Base
   ## Settings
   ##----------------------------------------------------------------------------
 
-  ENV['APP_MODE'] = ENV['APP_MODE'] || ( Sinatra::Base.development? ? 'map' : false )
+  ENV['APP_MODE'] = 'power' if Sinatra::Base.development?
 
   enable :sessions
 
@@ -36,9 +36,9 @@ class V0 < Sinatra::Base
   set show_exceptions: false
   set public_folder: 'public'
   set session_secret: ENV['SECRET_KEY_BASE']
-  set user_name: ( ENV['APP_MODE'] ? 'lorenzo' : nil ) || ENV['USER_NAME'] || "admin"
-  set user_password: ( ENV['APP_MODE'] ? 'password' : nil ) || ENV['USER_PASSWORD'] || "password"
-  set map_app: ENV['APP_MODE']
+  set map_app: ENV['APP_MODE'] == 'map'
+  set user_name: ( settings.map_app ? 'lorenzo' : nil ) || ENV['USER_NAME'] || "admin"
+  set user_password: ( settings.map_app ? 'password' : nil ) || ENV['USER_PASSWORD'] || "password"
 
   ## support _method DELETE/PUT
   ##----------------------------------------------------------------------------
@@ -134,7 +134,12 @@ class V0 < Sinatra::Base
     def authorized?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
 
-puts "Trying to auth: #{ [ @auth.provided?, @auth.basic?, @auth.credentials, [ settings.user_name, settings.user_password ], @auth.credentials == [ settings.user_name, settings.user_password ] ] }"
+# puts "Trying to auth: #{ [
+#   @auth.provided?,
+#   @auth.basic?,
+#   @auth.credentials,
+#   [ settings.user_name, settings.user_password ],
+#   @auth.credentials == [ settings.user_name, settings.user_password ] ] }"
 
       @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [ settings.user_name, settings.user_password ]
     end

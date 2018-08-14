@@ -16,6 +16,7 @@ class V0
         request.body.rewind
         @request_payload = JSON.parse request.body.read, symbolize_names: true
         GpsReading.create_from_post( @request_payload ) if @request_payload[:type] == "position"
+        "{ success: { message: 'Successfully created GPS reading.' } }".to_json
       end
 
     end
